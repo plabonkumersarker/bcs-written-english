@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Secure Login</title>
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4A90E2, #145DA0);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .container {
+      background: rgba(255 255 255 / 0.1);
+      backdrop-filter: blur(12px);
+      padding: 2.5rem 3rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgb(0 0 0 / 0.3);
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 1.8rem;
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: 1.1px;
+      user-select: none;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    input[type="password"] {
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1.1rem;
+      outline-offset: 3px;
+      outline-color: #68a0ff;
+      transition: outline-color 0.3s ease;
+    }
+    input[type="password"]:focus {
+      outline-color: #a0c8ff;
+      background: rgba(255 255 255 / 0.2);
+      color: #fff;
+    }
+
+    button {
+      background: #1e90ff;
+      border: none;
+      padding: 14px 0;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+      box-shadow: 0 4px 15px rgb(30 144 255 / 0.5);
+      user-select: none;
+    }
+    button:hover {
+      background: #005fcc;
+      box-shadow: 0 6px 20px rgb(0 95 204 / 0.7);
+    }
+    button:active {
+      transform: scale(0.98);
+      box-shadow: 0 3px 10px rgb(0 95 204 / 0.9);
+    }
+
+    #error {
+      margin-top: 1rem;
+      font-weight: 600;
+      color: #ff6b6b;
+      display: none;
+      user-select: none;
+      letter-spacing: 0.5px;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 400px) {
+      .container {
+        padding: 2rem 1.5rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      input[type="password"], button {
+        font-size: 1rem;
+        padding: 12px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="Login Form">
+    <h2>🔐 Secure Login</h2>
+    <form onsubmit="return checkPassword(event)" novalidate>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Enter password"
+        autocomplete="current-password"
+        required
+        aria-describedby="error"
+        aria-invalid="false"
+      />
+      <button type="submit" aria-label="Submit password to login">Enter</button>
+    </form>
+    <p id="error" role="alert" aria-live="assertive">❌ Wrong password!</p>
+  </div>
+
+  <script>
+    const correctHash = "d779ec432b9dba19ed09c290d9e474ee3cc35eeef417c29421695235a148c631";
+
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function checkPassword(event) {
+      event.preventDefault();
+      const inputField = document.getElementById('password');
+      const errorMsg = document.getElementById('error');
+
+      const input = inputField.value.trim();
+      if (!input) return; // ignore empty
+
+      const inputHash = await sha256(input);
+
+      if (inputHash === correctHash) {
+        localStorage.setItem("authenticated", "true");
+        window.location.href = "index.html";
+      } else {
+        errorMsg.style.display = "block";
+        inputField.setAttribute("aria-invalid", "true");
+        inputField.focus();
+      }
+    }
+  </script>
+</body>
+</html>

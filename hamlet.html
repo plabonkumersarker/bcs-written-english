@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>
+  if (localStorage.getItem("authenticated") !== "true") {
+    window.location.href = "login.html";
+  }
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+      background-color: #f4f4f4;
+      overflow: hidden;
+      position: relative;
+    }
+    h2 { color: #2c3e50; }
+
+    #quiz-container {
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      border: 2px solid #3498db;
+      border-radius: 10px;
+      background-color: white;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 10;
+    }
+
+    .option-button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #ecf0f1;
+      transition: 0.3s;
+    }
+
+    .option-button:hover { background-color: #bdc3c7; }
+    .correct { background-color: #2ecc71 !important; color: white; }
+    .incorrect { background-color: #e74c3c !important; color: white; }
+
+    .more-button {
+      background-color: #f39c12;
+      color: white;
+      padding: 5px 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .more-button:hover { background-color: #e67e22; }
+
+    #score-container {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      position: relative;
+      z-index: 10;
+    }
+
+    #progress-overlay {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0%;
+      background: rgba(46, 204, 113, 0.7);
+      transition: height 0.5s ease-in-out;
+      z-index: 5;
+    }
+
+    .huge-celebration {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: gold;
+      font-size: 50px;
+      font-weight: bold;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 20;
+    }
+
+    #huge-celebration button {
+      padding: 5px 10px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background-color: #3498db;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
+      margin-top: 10px;
+    }
+
+    #huge-celebration button:hover {
+      background-color: #2980b9;
+      transform: scale(1.1);
+    }
+
+    #popup-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(128, 128, 128, 0.8);
+      z-index: 19;
+      display: none;
+    }
+
+    #mistake-popup {
+      display: none;
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #ffffff, #f9f9f9);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      z-index: 30;
+      width: 90%;
+      max-width: 550px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    #mistake-popup h3 {
+      color: #c0392b;
+      font-size: 24px;
+      margin-bottom: 20px;
+      border-bottom: 2px dashed #e74c3c;
+      padding-bottom: 10px;
+    }
+
+    #mistake-list {
+      text-align: left;
+      padding-left: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #2c3e50;
+    }
+
+    #mistake-list li {
+      margin-bottom: 15px;
+      padding: 12px;
+      background: #fefefe;
+      border-left: 4px solid #e74c3c;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    /* 💰 Donation Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 30px 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+
+    .close {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover { color: #000; }
+
+    .bkash {
+      font-size: 24px;
+      font-weight: bold;
+      color: #d11d4c;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 400px) {
+      .modal-content {
+        padding: 25px 15px;
+      }
+      .close {
+        font-size: 24px;
+        right: 10px;
+      }
+    }
+
+    /* ✅ Floating Donate Button */
+    .donate-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: #FFE4B5;
+      color: white;
+      font-size: 26px;
+      border: none;
+      border-radius: 50%;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      z-index: 1000;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .donate-float:hover {
+      background-color: #c2185b;
+      transform: scale(1.05);
+    }
+
+  </style>
+</head>
+<body>
+
+<h2>Hamlet (1600–1601)</h2>
+<p>— a small village that doesn’t have its own church</p>
+
+<div id="quiz-container">
+  <p id="question"></p>
+  <div id="options"></div>
+  <button id="more-button" class="more-button" onclick="openDictionary()" style="display: none;">More</button>
+</div>
+
+<div id="score-container">Correct Answers: <span id="score">0</span></div>
+<div id="progress-overlay"></div>
+
+<div id="huge-celebration" class="huge-celebration">
+  🎉 Congratulations! I am proud of you! 🥳🎉  
+  <button onclick="resetQuiz()">Start Again</button>
+</div>
+
+<!-- 🎁 Donate Modal -->
+<div id="donateModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="document.getElementById('donateModal').style.display='none'">&times;</span>
+    <h4>Want to Support This Work?</h4>
+    <p>Send your support via,</p>
+    <div class="bkash">bKash<br>01788-779240<br>(Use "Send Money" Option)</div>
+    <p style="margin-top: 10px;">Thank you for keeping this resource alive 🌱</p>
+  </div>
+</div>
+
+<!-- 🎯 Floating Donate Button -->
+<button class="donate-float" title="Support Us" onclick="document.getElementById('donateModal').style.display='block'">💖</button>
+
+<!-- JS Logic -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.3/dist/confetti.browser.min.js"></script>
+<script>
+const questions = [
+    {
+        question: "Who is the first character to see the ghost of King Hamlet?",
+        options: ["Horatio", "Marcellus", "Bernardo", "Francisco"],
+        answer: "Bernardo"
+    },
+    {
+        question: "What does Hamlet mean when he says, 'To be, or not to be: that is the question'?",
+        options: ["He is contemplating life and death", "He is deciding whether to marry Ophelia", "He is questioning his loyalty to the king", "He is planning revenge"],
+        answer: "He is contemplating life and death"
+    },
+    {
+        question: "Why does Hamlet feign madness?",
+        options: ["To avoid his responsibilities", "To test Claudius's guilt", "To impress Ophelia", "To entertain the court"],
+        answer: "To test Claudius's guilt"
+    },
+    {
+        question: "What is the name of the play within the play that Hamlet stages?",
+        options: ["The Murder of Gonzago", "The Mousetrap", "The Spanish Tragedy", "The Revenger's Tragedy"],
+        answer: "The Mousetrap"
+    },
+    {
+        question: "Who says, 'Something is rotten in the state of Denmark'?",
+        options: ["Hamlet", "Horatio", "Marcellus", "Claudius"],
+        answer: "Marcellus"
+    },
+    {
+        question: "How does Ophelia die?",
+        options: ["She is poisoned", "She drowns", "She is stabbed", "She falls from a cliff"],
+        answer: "She drowns"
+    },
+    {
+        question: "What is Hamlet's relationship to Claudius?",
+        options: ["Uncle", "Father", "Brother", "Cousin"],
+        answer: "Uncle"
+    },
+    {
+        question: "Who kills Polonius?",
+        options: ["Claudius", "Hamlet", "Laertes", "Gertrude"],
+        answer: "Hamlet"
+    },
+    {
+        question: "What does the ghost of King Hamlet ask Hamlet to do?",
+        options: ["Avenge his murder", "Forgive Claudius", "Leave Denmark", "Protect Gertrude"],
+        answer: "Avenge his murder"
+    },
+    {
+        question: "What literary device is used in the line, 'Frailty, thy name is woman'?",
+        options: ["Metaphor", "Apostrophe", "Simile", "Personification"],
+        answer: "Apostrophe"
+    },
+    {
+        question: "Who becomes king of Denmark at the end of the play?",
+        options: ["Horatio", "Fortinbras", "Laertes", "Rosencrantz"],
+        answer: "Fortinbras"
+    },
+    {
+        question: "What is the primary reason for Hamlet's delay in avenging his father's death?",
+        options: ["Fear of Claudius", "Lack of evidence", "Moral uncertainty", "Love for Gertrude"],
+        answer: "Moral uncertainty"
+    },
+    {
+        question: "Which character is known for their long-winded speeches and spying?",
+        options: ["Horatio", "Polonius", "Laertes", "Guildenstern"],
+        answer: "Polonius"
+    },
+    {
+        question: "What does Yorick's skull symbolize in the play?",
+        options: ["The inevitability of death", "The futility of revenge", "The corruption of the court", "The madness of Hamlet"],
+        answer: "The inevitability of death"
+    },
+    {
+        question: "Who is the last character to die in the play?",
+        options: ["Hamlet", "Claudius", "Gertrude", "Laertes"],
+        answer: "Hamlet"
+    },
+    {
+        question: "What is the setting of 'Hamlet'?",
+        options: ["England", "Denmark", "Norway", "France"],
+        answer: "Denmark"
+    },
+    {
+        question: "Which character returns from France to avenge their father's death?",
+        options: ["Ophelia", "Laertes", "Horatio", "Rosencrantz"],
+        answer: "Laertes"
+    },
+    {
+        question: "What does Hamlet call Polonius when he insults him indirectly?",
+        options: ["A fishmonger", "A coward", "A traitor", "A fool"],
+        answer: "A fishmonger"
+    },
+    {
+        question: "Which of these is NOT a theme in 'Hamlet'?",
+        options: ["Revenge", "Madness", "Betrayal", "Industrialization"],
+        answer: "Industrialization"
+    },
+    {
+        question: "Who says, 'The lady doth protest too much, methinks'?",
+        options: ["Ophelia", "Gertrude", "Hamlet", "Claudius"],
+        answer: "Gertrude"
+    }
+];
+
+let score = 0;
+let askedQuestions = [];
+let currentWord = "";
+let mistakes = [];
+let totalAnswered = 0;
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function loadQuestion() {
+  if (askedQuestions.length === questions.length) {
+    askedQuestions = []; score = 0;
+    document.getElementById("score").innerText = score;
+    updateProgressOverlay();
+  }
+
+  let randomIndex;
+  do {
+    randomIndex = Math.floor(Math.random() * questions.length);
+  } while (askedQuestions.includes(randomIndex));
+
+  askedQuestions.push(randomIndex);
+  const questionObj = questions[randomIndex];
+
+  document.getElementById("question").innerText = questionObj.question;
+  const optionsContainer = document.getElementById("options");
+  optionsContainer.innerHTML = "";
+  shuffleArray(questionObj.options);
+
+  questionObj.options.forEach(option => {
+    const button = document.createElement("button");
+    button.className = "option-button";
+    button.innerText = option;
+    button.onclick = (e) => checkAnswer(e, button, questionObj.answer);
+    optionsContainer.appendChild(button);
+  });
+
+  currentWord = questionObj.question.match(/'([^']+)'/)[1];
+  document.getElementById("more-button").style.display = "block";
+}
+
+function checkAnswer(event, button, correctAnswer) {
+  totalAnswered++;
+  if (button.innerText === correctAnswer) {
+    button.classList.add("correct");
+    score++;
+    document.getElementById("score").innerText = score;
+    updateProgressOverlay();
+    launchConfetti(event);
+    if (score === questions.length) showCelebration();
+  } else {
+    button.classList.add("incorrect");
+    mistakes.push({
+      question: document.getElementById("question").innerText,
+      correctAnswer: correctAnswer
+    });
+    document.body.style.transition = "background-color 0.5s";
+    document.body.style.backgroundColor = "#e74c3c";
+    setTimeout(() => {
+      document.body.style.backgroundColor = "#f4f4f4";
+    }, 500);
+  }
+  if (totalAnswered === questions.length) {
+    setTimeout(() => {
+      if (mistakes.length > 0) showMistakePopup();
+    }, 1500);
+  }
+  setTimeout(loadQuestion, 1000);
+}
+
+function updateProgressOverlay() {
+  let progress = (score / questions.length) * 100;
+  document.getElementById("progress-overlay").style.height = `${progress}%`;
+}
+function showCelebration() {
+  document.getElementById("huge-celebration").style.display = "flex";
+  for (let i = 0; i < 10; i++) {
+    setTimeout(() => {
+      confetti({ particleCount: 150, spread: 80, startVelocity: 50 });
+    }, i * 300);
+  }
+}
+function resetQuiz() {
+  mistakes = []; totalAnswered = 0; score = 0; askedQuestions = [];
+  document.getElementById("score").innerText = score;
+  document.getElementById("progress-overlay").style.height = "0%";
+  document.getElementById("huge-celebration").style.display = "none";
+  loadQuestion();
+}
+function launchConfetti() {
+  confetti({ particleCount: 100, spread: 70 });
+}
+function openDictionary() {
+  window.open(`https://wikipedia.org/wiki/Hamlet`, '_blank');
+}
+function showMistakePopup() {
+  const popup = document.getElementById("mistake-popup");
+  const list = document.getElementById("mistake-list");
+  const overlay = document.getElementById("popup-overlay");
+
+  list.innerHTML = "";
+  mistakes.forEach((m, i) => {
+    const item = document.createElement("li");
+    item.innerHTML = `<strong>Q${i + 1}:</strong> ${m.question}<br><strong>Correct Answer:</strong> ${m.correctAnswer}`;
+    list.appendChild(item);
+  });
+
+  popup.style.display = "block";
+  overlay.style.display = "block";
+}
+function closeMistakePopup() {
+  document.getElementById("mistake-popup").style.display = "none";
+  document.getElementById("popup-overlay").style.display = "none";
+}
+window.onclick = function(event) {
+  const modal = document.getElementById('donateModal');
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+};
+loadQuestion();
+</script>
+
+<!-- Mistake popup -->
+<div id="mistake-popup">
+  <h3>Review Your Mistakes</h3>
+  <ul id="mistake-list"></ul>
+  <button onclick="closeMistakePopup()">Close</button>
+</div>
+<div id="popup-overlay"></div>
+
+</body>
+</html>

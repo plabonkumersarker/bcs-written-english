@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  if (localStorage.getItem("authenticated") !== "true") {
+    window.location.href = "login.html";
+  }
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BCS English Syllabus</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-X8YSXZ3ZXK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-X8YSXZ3ZXK');
+</script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f6f8;
+      color: #2c3e50;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #1e2a38;
+    }
+
+    .section {
+      background: #fff;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .group {
+      margin-top: 20px;
+    }
+
+    ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+
+    ul ul {
+      list-style-type: circle;
+      padding-left: 20px;
+      margin-top: 6px;
+    }
+
+    li {
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: #0b74de;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .group-title {
+      font-weight: 600;
+      font-size: 1.15em;
+      margin-bottom: 12px;
+      color: #34495e;
+      border-left: 4px solid #0b74de;
+      padding-left: 10px;
+    }
+
+    /* Donation Section */
+    .donation {
+      text-align: center;
+      padding: 40px 20px;
+      margin-top: 50px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+
+    .donation h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #1e2a38;
+    }
+
+    .donation p {
+      color: #555;
+      margin-bottom: 18px;
+      font-size: 1rem;
+    }
+
+    .donate-btn {
+      background: linear-gradient(to right, #0b74de, #2563eb);
+      color: white;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(11, 116, 222, 0.3);
+      transition: background-color 0.3s ease;
+    }
+
+    .donate-btn:hover {
+      background: linear-gradient(to right, #075ab3, #1e40af);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 99;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 30px 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 380px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      position: relative;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .modal-content h4 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+
+    .modal-content .bkash {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #d50000;
+    }
+
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #aaa;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #333;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+    }
+    
+.telegram-banner {
+  background: #0088cc;
+  color: white;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  text-align: center;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 1s ease;
+  cursor: pointer;
+}
+
+.telegram-banner a {
+  color: #ffe;
+  text-decoration: underline;
+  margin-left: 6px;
+}
+
+.telegram-banner a:hover {
+  color: #fff;
+}
+
+.telegram-fadeout {
+  opacity: 0.05;
+}
+  </style>
+</head>
+<body>
+<div class="telegram-banner" id="telegramBanner" onclick="restoreBanner()">
+  📚 Join our Telegram group for PDF materials & updates:
+  <a href="https://t.me/englishfor49bcs" target="_blank">t.me/englishfor49bcs</a>
+</div>
+  <h1>SYLLABUS FOR 49th BCS (WRITTEN) EXAMINATION</h1>
+  <h2>ENGLISH (POST RELATED) | Subject Code: 121</h2>
+
+  <div class="section">
+    <h2>Part-I (Shakespeare to Romantic Period) </h2>
+
+    <div class="group">
+      <div class="group-title">Group A (Shakespeare)</div>
+      <ul>
+        <li><a href="hamlet.html">Hamlet</a></li>
+        <li><a href="king-lear.html">King Lear</a></li>
+        <li><a href="macbeth.html">Macbeth</a></li>
+        <li><a href="othello.html">Othello</a></li>
+        <li><a href="the-tempest.html">The Tempest</a></li>
+      </ul>
+    </div>
+
+    <div class="group">
+      <div class="group-title">Group B</div>
+      <ul>
+        <li><a href="paradise-lost.html">John Milton – Paradise Lost (Book IX & X)</a></li>
+        <li><a href="gullivers-travels.html">Jonathan Swift – Gulliver's Travels</a></li>
+        <li>
+          William Wordsworth:
+          <ul>
+            <li><a href="tintern-abbey.html">Tintern Abbey</a></li>
+            <li><a href="ode-immortality.html">Ode: Intimations of Immortality</a></li>
+          </ul>
+        </li>
+        <li>
+          Coleridge:
+          <ul>
+            <li><a href="rime-ancient-mariner.html">The Rime of the Ancient Mariner</a></li>
+            <li><a href="kubla-khan.html">Kubla Khan</a></li>
+            <li><a href="dejection-ode.html">Dejection: an Ode</a></li>
+          </ul>
+        </li>
+        <li>
+          Shelley:
+          <ul>
+            <li><a href="ode-west-wind.html">Ode to the West Wind</a></li>
+            <li><a href="to-a-skylark.html">To a Skylark</a></li>
+          </ul>
+        </li>
+        <li>
+          John Keats:
+          <ul>
+            <li><a href="ode-grecian-urn.html">Ode on a Grecian Urn</a></li>
+            <li><a href="ode-nightingale.html">Ode to a Nightingale</a></li>
+            <li><a href="ode-psyche.html">Ode to Psyche</a></li>
+            <li><a href="ode-melancholy.html">Ode on Melancholy</a></li>
+            <li><a href="ode-to-autumn.html">Ode to Autumn</a></li>
+          </ul>
+        </li>
+        <li><a href="pride-and-prejudice.html">Jane Austen – Pride and Prejudice</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Part-II (Victorian to Modern Period)</h2>
+
+    <div class="group">
+      <div class="group-title">Group A</div>
+      <ul>
+        <li>
+          Tennyson:
+          <ul>
+            <li><a href="ulysses.html">Ulysses</a></li>
+            <li><a href="lotos-eaters.html">The Lotos Eaters</a></li>
+            <li><a href="tithonus.html">Tithonus</a></li>
+            <li><a href="in-memoriam.html">In Memoriam</a></li>
+          </ul>
+        </li>
+        <li>
+          Robert Browning:
+          <ul>
+            <li><a href="andrea-del-sarto.html">Andrea del Sarto</a></li>
+            <li><a href="fra-lippo-lippi.html">Fra Lippo Lippi</a></li>
+            <li><a href="my-last-duchess.html">My Last Duchess</a></li>
+            <li><a href="rabbi-ben-ezra.html">Rabbi Ben Ezra</a></li>
+          </ul>
+        </li>
+        <li>
+          Matthew Arnold:
+          <ul>
+            <li><a href="dover-beach.html">Dover Beach</a></li>
+            <li><a href="scholar-gipsy.html">The Scholar Gipsy</a></li>
+            <li><a href="thyrsis.html">Thyrsis</a></li>
+          </ul>
+        </li>
+        <li><a href="great-expectations.html">Charles Dickens – Great Expectations</a></li>
+        <li><a href="tess.html">Thomas Hardy – Tess of the D’Urbervilles</a></li>
+      </ul>
+    </div>
+
+    <div class="group">
+      <div class="group-title">Group B</div>
+      <ul>
+        <li>
+          W. B. Yeats:
+          <ul>
+            <li><a href="lake-isle-innisfree.html">The Lake Isle of Innisfree</a></li>
+            <li><a href="second-coming.html">The Second Coming</a></li>
+            <li><a href="sailing-to-byzantium.html">Sailing to Byzantium</a></li>
+            <li><a href="easter-1916.html">Easter 1916</a></li>
+            <li><a href="when-you-are-old.html">When You Are Old</a></li>
+          </ul>
+        </li>
+        <li>
+          T. S. Eliot:
+          <ul>
+            <li><a href="love-song-prufrock.html">The Love Song of J. Alfred Prufrock</a></li>
+            <li><a href="waste-land.html">The Waste Land</a></li>
+          </ul>
+        </li>
+        <li><a href="sons-and-lovers.html">D. H. Lawrence – Sons and Lovers</a></li>
+        <li><a href="heart-of-darkness.html">Joseph Conrad – Heart of Darkness</a></li>
+        <li><a href="death-of-salesman.html">Arthur Miller – Death of a Salesman</a></li>
+        <li><a href="waiting-for-godot.html">Samuel Beckett – Waiting for Godot</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Donation Section -->
+  <div class="donation">
+    <h3>Do you like it? 💡</h3>
+    <p>Your small contribution helps maintain and grow this platform.</p>
+    <button class="donate-btn" onclick="document.getElementById('donateModal').style.display='block'">
+      💖 Donate via bKash
+    </button>
+  </div>
+
+  <!-- Modal -->
+  <div id="donateModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="document.getElementById('donateModal').style.display='none'">&times;</span>
+      <h4>Support this Project</h4>
+      <p>Send your appreciation to:</p>
+      <div class="bkash">📱 01788-779240<br><small>(bKash - Send Money)</small></div>
+      <p style="margin-top: 12px; color: #444;">Thank you for keeping this resource alive 🌱</p>
+    </div>
+  </div>
+
+  <script>
+  window.onload = function() {
+    // Set year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Modal outside click to close
+    window.onclick = function(event) {
+      const modal = document.getElementById('donateModal');
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  };
+  
+  
+</script>
+
+<script>
+  let fadeTimeout;
+
+  function fadeOutBanner() {
+    const banner = document.getElementById('telegramBanner');
+    banner.classList.add('telegram-fadeout');
+  }
+
+  function restoreBanner() {
+    const banner = document.getElementById('telegramBanner');
+    banner.classList.remove('telegram-fadeout');
+
+    // Clear existing timer if already set
+    clearTimeout(fadeTimeout);
+
+    // Restart fade timer (2 sec)
+    fadeTimeout = setTimeout(fadeOutBanner, 2000);
+  }
+
+  window.onload = function () {
+    // Initial fade after 2 sec
+    fadeTimeout = setTimeout(fadeOutBanner, 2000);
+  };
+</script>
+
+<!-- Credit Section -->
+<div style="text-align:center; font-size: 0.95rem; margin-top: 40px; color: #666;">
+  Created by 
+  <a href="mailto:plabon.connect@gmail.com" style="color:#0b74de; font-weight: 500;">
+    Plabon
+  </a> &nbsp;|&nbsp; © <span id="year"></span>
+</div>
+
+<script>
+  // Set year in copyright
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("year").textContent = new Date().getFullYear();
+  });
+</script>
+</body>
+</html>
